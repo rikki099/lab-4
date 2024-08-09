@@ -1,0 +1,210 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class MenuProgram {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+
+        int opcion1Count = 0;
+        int opcion2Count = 0;
+        int opcion3Count = 0;
+        int opcion4Count = 0;
+        
+        while (true) {
+            System.out.println("Menú:");
+            System.out.println("1 - Palabra al Revés");
+            System.out.println("2 - Número Perfecto");
+            System.out.println("3 - Primos");
+            System.out.println("4 - Votaciones");
+            System.out.println("5 - Salir");
+            System.out.print("Seleccione una opción: ");
+            
+            int opcion = 0;
+
+            try {
+                opcion = Integer.parseInt(scanner.nextLine());
+                
+                switch (opcion) {
+                    case 1:
+                        opcion1Count++;
+                        System.out.print("Ingrese una cadena de texto: ");
+                        String cadena = scanner.nextLine();
+                        if (cadena.isEmpty()) {
+                            System.out.println("Error: La cadena no puede estar vacía.");
+                        } else {
+                            String cadenaInvertida = invertirCadena(cadena);
+                            System.out.println("Cadena invertida: " + cadenaInvertida);
+                        }
+                        break;
+                        
+                    case 2:
+                        opcion2Count++;
+                        int numero = 0;
+                        boolean entradaValida = false;
+                        while (!entradaValida) {
+                            try {
+                                System.out.print("Ingrese un número entero positivo: ");
+                                numero = Integer.parseInt(scanner.nextLine());
+                                if (numero <= 0) {
+                                    throw new IllegalArgumentException("El número debe ser un entero positivo.");
+                                }
+                                entradaValida = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Error: Por favor ingrese un número entero válido.");
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Error: " + e.getMessage());
+                            }
+                        }
+                        if (esNumeroPerfecto(numero)) {
+                            System.out.println(numero + " es un número perfecto.");
+                        } else {
+                            System.out.println(numero + " no es un número perfecto.");
+                        }
+                        break;
+                        
+                    case 3:
+
+                        opcion3Count++;
+                        int numAleatorio = random.nextInt(100) + 1;
+                        System.out.println("Número aleatorio generado: " + numAleatorio);
+                        if (esPrimo(numAleatorio)) {
+                            System.out.println(numAleatorio + " es un número primo.");
+                        } else {
+                            System.out.println(numAleatorio + " no es un número primo.");
+                        }
+                        System.out.println("Número de divisores: " + contarDivisores(numAleatorio));
+                        System.out.print("Divisores: ");
+                        for (int divisor : obtenerDivisores(numAleatorio)) {
+                            System.out.print(divisor + " ");
+                        }
+                        System.out.println();
+                        break;
+                        
+                    case 4:
+
+                        opcion4Count++;
+                        System.out.print("¿Cuántos votantes hay en el país? ");
+                        int cantidadVotantes = 0;
+                        boolean cantidadValida = false;
+                        while (!cantidadValida) {
+                            try {
+                                cantidadVotantes = Integer.parseInt(scanner.nextLine());
+                                if (cantidadVotantes <= 0) {
+                                    throw new IllegalArgumentException("La cantidad de votantes debe ser mayor que 0.");
+                                }
+                                cantidadValida = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Error: Por favor ingrese un número entero válido.");
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Error: " + e.getMessage());
+                            }
+                        }
+
+                        int votosAzul = 0;
+                        int votosRojo = 0;
+                        int votosNegro = 0;
+                        int votosAmarillo = 0;
+                        int votosNulos = 0;
+                        
+                        for (int i = 0; i < cantidadVotantes; i++) {
+                            System.out.print("Ingrese el voto (AZUL, ROJO, NEGRO, AMARILLO): ");
+                            String voto = scanner.nextLine().toUpperCase();
+                            switch (voto) {
+                                case "AZUL":
+                                    votosAzul++;
+                                    break;
+                                case "ROJO":
+                                    votosRojo++;
+                                    break;
+                                case "NEGRO":
+                                    votosNegro++;
+                                    break;
+                                case "AMARILLO":
+                                    votosAmarillo++;
+                                    break;
+                                default:
+                                    votosNulos++;
+                                    break;
+                            }
+                        }
+
+                        int votosValidos = votosAzul + votosRojo + votosNegro + votosAmarillo;
+                        if ((double) votosValidos / cantidadVotantes >= 0.6) {
+                            String ganadora = determinarGanador(votosAzul, votosRojo, votosNegro, votosAmarillo);
+                            System.out.println("La planilla ganadora es: " + ganadora);
+                        } else {
+                            System.out.println("VOTACIÓN FALLIDA");
+                        }
+                        break;
+                        
+                    case 5:
+
+                        System.out.println("Saliendo del programa...");
+                        System.out.println("Número de veces que se seleccionó la opción 1: " + opcion1Count);
+                        System.out.println("Número de veces que se seleccionó la opción 2: " + opcion2Count);
+                        System.out.println("Número de veces que se seleccionó la opción 3: " + opcion3Count);
+                        System.out.println("Número de veces que se seleccionó la opción 4: " + opcion4Count);
+                        scanner.close();
+                        return;
+                        
+                    default:
+                        System.out.println("Opción no válida. Por favor, seleccione una opción del menú.");
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor, ingrese un número válido.");
+            }
+        }
+    }
+
+    private static String invertirCadena(String cadena) {
+        return new StringBuilder(cadena).reverse().toString();
+    }
+
+    private static boolean esNumeroPerfecto(int numero) {
+        int sumaDivisores = 0;
+        for (int i = 1; i < numero; i++) {
+            if (numero % i == 0) {
+                sumaDivisores += i;
+            }
+        }
+        return sumaDivisores == numero;
+    }
+
+    private static boolean esPrimo(int numero) {
+        if (numero <= 1) return false;
+        for (int i = 2; i <= Math.sqrt(numero); i++) {
+            if (numero % i == 0) return false;
+        }
+        return true;
+    }
+
+    private static int contarDivisores(int numero) {
+        int conteo = 0;
+        for (int i = 1; i <= numero; i++) {
+            if (numero % i == 0) {
+                conteo++;
+            }
+        }
+        return conteo;
+    }
+
+    private static int[] obtenerDivisores(int numero) {
+        int[] divisores = new int[contarDivisores(numero)];
+        int indice = 0;
+        for (int i = 1; i <= numero; i++) {
+            if (numero % i == 0) {
+                divisores[indice++] = i;
+            }
+        }
+        return divisores;
+    }
+
+    private static String determinarGanador(int azul, int rojo, int negro, int amarillo) {
+        if (azul > rojo && azul > negro && azul > amarillo) return "AZUL";
+        if (rojo > azul && rojo > negro && rojo > amarillo) return "ROJO";
+        if (negro > azul && negro > rojo && negro > amarillo) return "NEGRO";
+        return "AMARILLO";
+    }
+}
